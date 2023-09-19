@@ -1,27 +1,31 @@
 """
-Este proyecto es un juego de gato (tic tac toe).
-Está hecho para practicar programación en Python, por lo que contiene elementos innecesarios para el juego
-pero que se usaron para practicar programación con clases en este lenguaje.
+Losa lucines gpt.
+Inteligencia Artificial. ITAM.
+
+Proyecto 1: Dominó con minmax
 """
 
 import random
 
 class Tablero:
     def __init__(self):
-        self.dim = 3
-        self.jugadas = [0]*9
+        self.left = -1;
+        self.right = -1;
         
     def imprimeTablero(self):
         tabla = """
         +---+---+---+
-        | {} | {} | {} |
-        +---+---+---+
-        | {} | {} | {} |
-        +---+---+---+
-        | {} | {} | {} |
+        | {} | {...} | {} |
         +---+---+---+
         """
+
         print(tabla.format(*self.jugadas).replace('0','-').replace('-1', 'O').replace('1', 'X'))
+
+    def valoraTablero():
+        """
+        Evaluar cuando se acaba la partida. Victoria o otra cosa
+        """
+        pass
 
 
 class Jugador:
