@@ -12,7 +12,7 @@ class Tablero:
     def __init__(self):
         self.left = -1
         self.right = -1
-        self.fichas = np.zeros(7)
+        self.fichas = np.zeros((7,7))
         
     def imprimeTablero(self):
         tabla = """
@@ -22,6 +22,46 @@ class Tablero:
                 """
 
         print(tabla.format(self.left,self.right))
+
+
+    def primerFicha(self, ficha, idJugador):
+        if self.left==-1 and self.right==-1:
+            self.left = ficha[0]
+            self.right = ficha[1]
+            self.fichas[ficha] = idJugador
+
+
+    def colocarFicha(self, ficha, lado, idJugador):
+        success = -1
+        
+        if self.fichas[ficha] == 0:
+            if lado=='I':
+                if ficha[0]==self.left:
+                    self.left = ficha[1]
+                    self.fichas[ficha] = idJugador
+                    success = 1
+                elif ficha[1]==self.left:
+                    self.left = ficha[0]
+                    self.fichas[ficha] = idJugador
+                    success = 1
+                else:
+                    print('Movimiento invalido')
+            else:
+                if ficha[0]==self.right:
+                    self.right = ficha[1]
+                    self.fichas[ficha] = idJugador
+                    success = 1
+                elif ficha[1]==self.rigth:
+                    self.right = ficha[0]
+                    self.fichas[ficha] = idJugador
+                    success = 1
+                else:
+                    print('Movimiento invalido')
+        else:
+            print('La ficha ya esta en el tablero.')
+                    
+        return success
+                    
 
     def valoraTablero():
         """
@@ -38,7 +78,20 @@ class Jugador:
 
     def numFichas(self):
         return len(self.fichas)
-    
+
+    def validaFicha(self, ficha):
+        success = False
+        if type(ficha) is tuple and len(ficha) == 2:
+            if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
+                if ficha not in self.fichas:
+                    success = True
+                else:
+                    print("Ficha repetida")
+            else:
+                print("Ficha inexistente")
+        else:
+            print("Formato inválido")
+        return success
 
 class CPU(Jugador):
     def __init__(self):
@@ -58,36 +111,59 @@ class CPU(Jugador):
 
     def darFicha(self, ficha):
         success = -1
-        if type(ficha) is tuple and len(ficha) == 2:
-            if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
-                if ficha not in self.fichas:
-                    self.fichas.append(ficha)
-                    success = 1
-                else:
-                    print("Ficha repetida")
-            else:
-                print("Ficha inexistente")
-        else:
-            print("Formato inválido")
+        if self.validaFicha(ficha):
+            self.fichas.append(ficha)
+            success = 1
         return success
+
+    def minmax(self):
+        pass
+    
+    def heuristica(self):
+        pass
+
+    def primerMovimiento(self, tablero):
+        print('No implementado')
     
     def movimiento(self, tablero):
-        pass
+        print('No implementado')
             
 
 class JugadorHumano(Jugador):
     def inicializarFichas(self):
         self.fichas = [1]*7
 
-    def movimiento(self, tablero):
-        pass
-    
-    def minmax(self):
-        # test
-        pass
+    def primerMovimiento(self, tablero):
+        print('¿Qué ficha vas a tirar?')
+        bandera = True
+        while bandera:
+            movi = input('-> ')
+            movi = movi.split(',')
+            movi = [int(x) for x in movi]
+            movi = tuple(movi)
+            if self.validaFicha(movi):
+                tablero.primerFicha(movi,self.id)
+                bandera = False
 
-    def heuristica(self):
-        pass
+                
+    def movimiento(self, tablero):
+        print('¿Qué ficha vas a tirar?')
+        bandera = True
+        while bandera:
+            movi = input('-> ')
+            movi = movi.split(',')
+            movi = [int(x) for x in movi]
+            movi = tuple(movi)
+            if self.validaFicha(movi):
+                while bandera:
+                    print('¿De que lado? [I/D]')
+                    lado = input('-> ')
+                    if lado.upper() == 'D':
+                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                    elif lado.upper() == 'I':
+                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                    else:
+                        print('Movimiento no valido')
 
 
 class Partida():
@@ -99,7 +175,7 @@ class Partida():
 
     def crearJugadores(self):
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
-        name1 = input("\tJugador 1:\n\t\t")
+        name1 = input("\tJugador 1:\n\t\t-> ")
         if name1 != 'CPU':
             jugador1 = JugadorHumano()
             jugador1.nombre = name1
@@ -109,7 +185,7 @@ class Partida():
         jugador1.id = 1
         jugador1.inicializarFichas()
 
-        name2 = input("\tJugador 2:\n\t\t")
+        name2 = input("\tJugador 2:\n\t\t-> ")
         if name2 != 'CPU':
             jugador2 = JugadorHumano()
             jugador2.nombre = name2
@@ -124,16 +200,31 @@ class Partida():
         print("\n")
     
     def jugada(self):
-        pass
-
+        self.jugadores[0].movimiento(self.tablero)
+        self.tablero.imprimeTablero()
+        self.jugadores[1].movimiento(self.tablero)
+        self.tablero.imprimeTablero()
+        
     def revisarVictoria(self):
-        pass
-
-    def checksum(self, sum):
         pass
             
     def iniciaPartida(self):
         self.crearJugadores()
+        print('¿Qué jugador tira primero?')
+        print('[1] {}'.format(self.jugadores[0].nombre))
+        print('[2] {}'.format(self.jugadores[1].nombre))
+        bandera = True
+        while bandera:
+            jugador = input("-> ")
+            if jugador=="2":
+                self.jugadores = self.jugadores[::-1] #invertimos la lista de jugadores
+                bandera = False
+            elif jugador=="1":
+                bandera = False
+            else:
+                print("Opción incorrecta.")
+        self.jugadores[0].primerMovimiento(self.tablero)
+        self.tablero.imprimeTablero()
         
         
 if __name__=='__main__':
@@ -146,4 +237,6 @@ if __name__=='__main__':
     partida.iniciaPartida()
     print(partida.jugadores[0].fichas)
     print(partida.jugadores[1].fichas)
+    partida.jugada()
+    
     
