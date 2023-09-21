@@ -217,7 +217,7 @@ class Partida():
         self.revisarVictoria()
         
     def revisarVictoria(self):
-        if not pozo:
+        if not self.pozo:
             if self.jugadores[0].numFichas()==0:
                 print(f"El jugador {self.jugadores[0].nombre} ganó.")
                 self.fin = True
