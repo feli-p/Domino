@@ -75,6 +75,7 @@ class Jugador:
         self.nombre = ""
         self.id = 0
         self.fichas = []
+        self.pasar = False #Si esta bandera esta prendida el jugador no tiene movimentos validos, por lo que debera pasar
 
     def numFichas(self):
         return len(self.fichas)
@@ -133,8 +134,9 @@ class JugadorHumano(Jugador):
     def inicializarFichas(self):
         self.fichas = [1]*7
 
+
     def primerMovimiento(self, tablero):
-        print('¿Qué ficha vas a tirar?')
+        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
         bandera = True
         while bandera:
             movi = input('-> ')
@@ -147,23 +149,30 @@ class JugadorHumano(Jugador):
 
                 
     def movimiento(self, tablero):
-        print('¿Qué ficha vas a tirar?')
+        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
         bandera = True
         while bandera:
             movi = input('-> ')
-            movi = movi.split(',')
-            movi = [int(x) for x in movi]
-            movi = tuple(movi)
-            if self.validaFicha(movi):
-                while bandera:
-                    print('¿De que lado? [I/D]')
-                    lado = input('-> ')
-                    if lado.upper() == 'D':
-                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
-                    elif lado.upper() == 'I':
-                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
-                    else:
-                        print('Movimiento no valido')
+            if movi == '0':
+                self.pasar = True
+                bandera = False
+            elif movi == '1':
+                self.fichas.append(1) #agregamos una ficha
+            else:
+                movi = movi.split(',')
+                movi = [int(x) for x in movi]
+                movi = tuple(movi)
+                if self.validaFicha(movi):
+                    while bandera:
+                        print('¿De que lado? [I/D]')
+                        lado = input('-> ')
+                        if lado.upper() == 'D':
+                            bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                        elif lado.upper() == 'I':
+                            bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                        else:
+                            print('Movimiento no valido')
+        self.fichas = self.fichas[:-1] #Quitamos una ficha
 
 
 class Partida():
@@ -172,6 +181,7 @@ class Partida():
         self.ronda = 0
         self.fin = False
         self.jugadores = []
+        self.pozo = True #Esta variable le indica al programa que aun hay fichas en el pozo
 
     def crearJugadores(self):
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
@@ -204,9 +214,19 @@ class Partida():
         self.tablero.imprimeTablero()
         self.jugadores[1].movimiento(self.tablero)
         self.tablero.imprimeTablero()
+        self.revisarVictoria()
         
     def revisarVictoria(self):
-        pass
+        if not pozo:
+            if self.jugadores[0].numFichas()==0:
+                print(f"El jugador {self.jugadores[0].nombre} ganó.")
+                self.fin = True
+            elif self.jugadores[1].numFichas()==0:
+                print(f'El jugador {self.jugadores[0].nombre} ganó.')
+                self.fin = True
+        elif self.jugadores[0].pasar and self.jugadores[1].pasar:
+            print('Empate.')
+                
             
     def iniciaPartida(self):
         self.crearJugadores()
@@ -225,7 +245,22 @@ class Partida():
                 print("Opción incorrecta.")
         self.jugadores[0].primerMovimiento(self.tablero)
         self.tablero.imprimeTablero()
-        
+
+
+    def validaPozo(self):
+        print('¿Aún quedan fichas en el pozo? [S/N]')
+        aux = input('-> ')
+        bandera = True
+
+        while bandera:
+            if aux.upper()=='N':
+                self.pozo = False
+                bandera = False
+            elif aux.upper()=='S':
+                bandera = False
+            else:
+                print('Respuesta invalida.')
+                
         
 if __name__=='__main__':
     print("""
@@ -235,8 +270,10 @@ if __name__=='__main__':
           """)
     partida = Partida()
     partida.iniciaPartida()
-    print(partida.jugadores[0].fichas)
-    print(partida.jugadores[1].fichas)
-    partida.jugada()
+    #print(partida.jugadores[0].fichas)
+    #print(partida.jugadores[1].fichas)
+    while not(partida.fin):
+        partida.jugada()
+        partida.revisarVictoria()
     
     
