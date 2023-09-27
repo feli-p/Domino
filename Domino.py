@@ -51,7 +51,7 @@ class Tablero:
                     self.right = ficha[1]
                     self.fichas[ficha] = idJugador
                     success = 1
-                elif ficha[1]==self.rigth:
+                elif ficha[1]==self.right:
                     self.right = ficha[0]
                     self.fichas[ficha] = idJugador
                     success = 1
@@ -117,7 +117,8 @@ class CPU(Jugador):
             success = 1
         return success
 
-    def minmax(self):
+    def minmax(self, node, depth, maxPlayer):
+        
         pass
     
     def heuristica(self):
@@ -145,6 +146,7 @@ class JugadorHumano(Jugador):
             movi = tuple(movi)
             if self.validaFicha(movi):
                 tablero.primerFicha(movi,self.id)
+                self.fichas = self.fichas[:-1] #Quitamos una ficha
                 bandera = False
 
                 
@@ -168,11 +170,15 @@ class JugadorHumano(Jugador):
                         lado = input('-> ')
                         if lado.upper() == 'D':
                             bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                            if not bandera:
+                                self.fichas = self.fichas[:-1] #Quitamos una ficha
                         elif lado.upper() == 'I':
                             bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                            if not bandera:
+                                self.fichas = self.fichas[:-1] #Quitamos una ficha
                         else:
                             print('Movimiento no valido')
-        self.fichas = self.fichas[:-1] #Quitamos una ficha
+        print(self.numFichas())
 
 
 class Partida():
@@ -210,21 +216,22 @@ class Partida():
         print("\n")
     
     def jugada(self):
-        self.jugadores[0].movimiento(self.tablero)
-        self.tablero.imprimeTablero()
         self.jugadores[1].movimiento(self.tablero)
+        self.tablero.imprimeTablero()
+        self.revisarVictoria()
+        self.jugadores[0].movimiento(self.tablero)
         self.tablero.imprimeTablero()
         self.revisarVictoria()
         
     def revisarVictoria(self):
-        if not self.pozo:
+        if not (self.jugadores[0].pasar and self.jugadores[1].pasar): 
             if self.jugadores[0].numFichas()==0:
                 print(f"El jugador {self.jugadores[0].nombre} ganó.")
                 self.fin = True
             elif self.jugadores[1].numFichas()==0:
                 print(f'El jugador {self.jugadores[0].nombre} ganó.')
                 self.fin = True
-        elif self.jugadores[0].pasar and self.jugadores[1].pasar:
+        else:
             print('Empate.')
                 
             
