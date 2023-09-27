@@ -2,7 +2,7 @@
 Losa lucines gpt.
 Inteligencia Artificial. ITAM.
 
-Proyecto 1: Dominó con minmax
+Proyecto 1: Dominó con minimax
 """
 
 import random
