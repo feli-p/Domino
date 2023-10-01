@@ -152,6 +152,7 @@ class JugadorHumano(Jugador):
             movi = input('-> ')
             movi = movi.split(',')
             movi = [int(x) for x in movi]
+            movi.sort()
             movi = tuple(movi)
             if self.validaFicha(movi):
                 tablero.primerFicha(movi,self.id)
@@ -162,6 +163,7 @@ class JugadorHumano(Jugador):
     def movimiento(self, tablero):
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
         bandera = True
+        self.pasar = False
         while bandera:
             movi = input('-> ')
             if movi == '0':
@@ -172,6 +174,7 @@ class JugadorHumano(Jugador):
             else:
                 movi = movi.split(',')
                 movi = [int(x) for x in movi]
+                movi.sort()
                 movi = tuple(movi)
                 if self.validaFicha(movi):
                     while bandera:
@@ -187,7 +190,7 @@ class JugadorHumano(Jugador):
                                 self.fichas = self.fichas[:-1] #Quitamos una ficha
                         else:
                             print('Movimiento no valido')
-        print(self.numFichas())
+        #print(self.numFichas())
 
 
 class Partida():
@@ -244,6 +247,7 @@ class Partida():
                 print(f'El jugador {self.jugadores[0].nombre} ganó.')
                 self.fin = True
         else:
+            self.fin = True
             print('Empate.')
                 
             
