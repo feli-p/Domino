@@ -13,7 +13,8 @@ class Tablero:
         self.left = -1
         self.right = -1
         self.fichas = np.zeros((7,7))
-        
+       
+
     def imprimeTablero(self):
         tabla = """
                     +---+---+---+
@@ -77,8 +78,10 @@ class Jugador:
         self.fichas = []
         self.pasar = False #Si esta bandera esta prendida el jugador no tiene movimentos validos, por lo que debera pasar
 
+
     def numFichas(self):
         return len(self.fichas)
+
 
     def validaFicha(self, ficha):
         success = False
@@ -94,9 +97,11 @@ class Jugador:
             print("Formato inválido")
         return success
 
+
 class CPU(Jugador):
     def __init__(self):
         super().__init__()
+
 
     def inicializarFichas(self):
         for i in range(7):
@@ -117,16 +122,20 @@ class CPU(Jugador):
             success = 1
         return success
 
+
     def minmax(self, node, depth, maxPlayer):
         
         pass
     
+
     def heuristica(self):
         pass
+
 
     def primerMovimiento(self, tablero):
         print('No implementado')
     
+
     def movimiento(self, tablero):
         print('No implementado')
             
@@ -189,6 +198,7 @@ class Partida():
         self.jugadores = []
         self.pozo = True #Esta variable le indica al programa que aun hay fichas en el pozo
 
+
     def crearJugadores(self):
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
         name1 = input("\tJugador 1:\n\t\t-> ")
@@ -215,6 +225,7 @@ class Partida():
         self.jugadores.append(jugador2)
         print("\n")
     
+
     def jugada(self):
         self.jugadores[1].movimiento(self.tablero)
         self.tablero.imprimeTablero()
@@ -222,6 +233,7 @@ class Partida():
         self.jugadores[0].movimiento(self.tablero)
         self.tablero.imprimeTablero()
         self.revisarVictoria()
+        
         
     def revisarVictoria(self):
         if not (self.jugadores[0].pasar and self.jugadores[1].pasar): 
