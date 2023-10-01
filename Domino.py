@@ -13,6 +13,7 @@ class Tablero:
         self.left = -1
         self.right = -1
         self.fichas = np.zeros((7,7))
+        self.pozo = 14
        
 
     def imprimeTablero(self):
@@ -170,7 +171,11 @@ class JugadorHumano(Jugador):
                 self.pasar = True
                 bandera = False
             elif movi == '1':
-                self.fichas.append(1) #agregamos una ficha
+                if tablero.pozo > 0:
+                    self.fichas.append(1) #agregamos una ficha
+                    tablero.pozo -= 1
+                else:
+                    print('El pozo está vacío.')
             else:
                 movi = movi.split(',')
                 movi = [int(x) for x in movi]
@@ -190,16 +195,15 @@ class JugadorHumano(Jugador):
                                 self.fichas = self.fichas[:-1] #Quitamos una ficha
                         else:
                             print('Movimiento no valido')
-        #print(self.numFichas())
+        print(self.numFichas())
 
 
 class Partida():
     def __init__(self):
         self.tablero = Tablero()
-        self.ronda = 0
+        self.ronda = 1
         self.fin = False
         self.jugadores = []
-        self.pozo = True #Esta variable le indica al programa que aun hay fichas en el pozo
 
 
     def crearJugadores(self):
@@ -224,18 +228,33 @@ class Partida():
         jugador2.id = -1
         jugador2.inicializarFichas()
 
-        self.jugadores.append(jugador1)
-        self.jugadores.append(jugador2)
-        print("\n")
+        print('¿Qué jugador tira primero?')
+        print('[1] {}'.format(jugador1.nombre))
+        print('[2] {}'.format(jugador2.nombre))
+        bandera = True
+        while bandera:
+            jugador = input("-> ")
+            if jugador=="1":
+                self.jugadores.append(jugador1)
+                self.jugadores.append(jugador2)
+                bandera = False
+            elif jugador=="2":
+                self.jugadores.append(jugador2)
+                self.jugadores.append(jugador1)
+                bandera = False
+            else:
+                print("Opción incorrecta.")
+        print()
     
 
     def jugada(self):
-        self.jugadores[1].movimiento(self.tablero)
+        print(f"Ronda {self.ronda+1}: ")
+        aux = self.ronda % 2
+
+        self.jugadores[aux].movimiento(self.tablero)
+        
         self.tablero.imprimeTablero()
-        self.revisarVictoria()
-        self.jugadores[0].movimiento(self.tablero)
-        self.tablero.imprimeTablero()
-        self.revisarVictoria()
+        self.ronda += 1
         
 
     def revisarVictoria(self):
@@ -253,36 +272,8 @@ class Partida():
             
     def iniciaPartida(self):
         self.crearJugadores()
-        print('¿Qué jugador tira primero?')
-        print('[1] {}'.format(self.jugadores[0].nombre))
-        print('[2] {}'.format(self.jugadores[1].nombre))
-        bandera = True
-        while bandera:
-            jugador = input("-> ")
-            if jugador=="2":
-                self.jugadores = self.jugadores[::-1] #invertimos la lista de jugadores
-                bandera = False
-            elif jugador=="1":
-                bandera = False
-            else:
-                print("Opción incorrecta.")
         self.jugadores[0].primerMovimiento(self.tablero)
         self.tablero.imprimeTablero()
-
-
-    def validaPozo(self):
-        print('¿Aún quedan fichas en el pozo? [S/N]')
-        aux = input('-> ')
-        bandera = True
-
-        while bandera:
-            if aux.upper()=='N':
-                self.pozo = False
-                bandera = False
-            elif aux.upper()=='S':
-                bandera = False
-            else:
-                print('Respuesta invalida.')
                 
         
 if __name__=='__main__':
@@ -291,6 +282,7 @@ if __name__=='__main__':
             Hecho por: losa lucines gpt
         ------------------------------------
           """)
+    
     partida = Partida()
     partida.iniciaPartida()
     #print(partida.jugadores[0].fichas)
