@@ -124,7 +124,6 @@ class CPU(Jugador):
 
 
     def minmax(self, node, depth, maxPlayer):
-        
         pass
     
 
@@ -149,6 +148,7 @@ class JugadorHumano(Jugador):
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
         bandera = True
         while bandera:
+            # usar try - except
             movi = input('-> ')
             movi = movi.split(',')
             movi = [int(x) for x in movi]
@@ -234,7 +234,7 @@ class Partida():
         self.tablero.imprimeTablero()
         self.revisarVictoria()
         
-        
+
     def revisarVictoria(self):
         if not (self.jugadores[0].pasar and self.jugadores[1].pasar): 
             if self.jugadores[0].numFichas()==0:
