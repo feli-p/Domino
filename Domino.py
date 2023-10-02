@@ -182,19 +182,18 @@ class JugadorHumano(Jugador):
                 movi.sort()
                 movi = tuple(movi)
                 if self.validaFicha(movi):
-                    while bandera:
-                        print('¿De que lado? [I/D]')
-                        lado = input('-> ')
-                        if lado.upper() == 'D':
-                            bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
-                            if not bandera:
-                                self.fichas = self.fichas[:-1] #Quitamos una ficha
-                        elif lado.upper() == 'I':
-                            bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
-                            if not bandera:
-                                self.fichas = self.fichas[:-1] #Quitamos una ficha
-                        else:
-                            print('Movimiento no valido')
+                    print('¿De que lado? [I/D]')
+                    lado = input('-> ')
+                    if lado.upper() == 'D':
+                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                        if not bandera:
+                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                    elif lado.upper() == 'I':
+                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                        if not bandera:
+                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                    else:
+                        print('Movimiento no valido. Ingresa la ficha de nuevo.')
         print(self.numFichas())
 
 
