@@ -6,9 +6,33 @@ Proyecto 1: Dominó con minimax
 """
 
 import random
+from time import time
 import numpy as np
+import re
+
+# no funciona
+def tiempo_transcurrido(f):
+    """
+    Decorador.
+    Ejecuta la función y calcula el tiempo transcurrido.
+    """
+    def wrapper():
+        inicio = time()
+        # Regresa el valor de la función original.
+        fun = f()
+        tiempo_total = time() - inicio
+        print("Tiempo transcurrido: %0.10f segundos." % tiempo_total)
+        return fun
+    
+    return wrapper
+
 
 class Tablero:
+    """
+    Generalización del tablero de Dominó.
+    Almacena la información necesaria de la partida y verifica movimientos.
+    Imprime una versión resumida de las fichas en juego.
+    """
     def __init__(self):
         self.left = -1
         self.right = -1
@@ -151,7 +175,7 @@ class JugadorHumano(Jugador):
         while bandera:
             # usar try - except
             movi = input('-> ')
-            movi = movi.split(',')
+            movi = re.split(r',|-|\.', movi)
             movi = [int(x) for x in movi]
             movi.sort()
             movi = tuple(movi)
@@ -160,7 +184,7 @@ class JugadorHumano(Jugador):
                 self.fichas = self.fichas[:-1] #Quitamos una ficha
                 bandera = False
 
-                
+
     def movimiento(self, tablero):
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
         bandera = True
@@ -177,7 +201,7 @@ class JugadorHumano(Jugador):
                 else:
                     print('El pozo está vacío.')
             else:
-                movi = movi.split(',')
+                movi = re.split(r',|-|\.', movi)
                 movi = [int(x) for x in movi]
                 movi.sort()
                 movi = tuple(movi)
@@ -243,9 +267,9 @@ class Partida():
                 bandera = False
             else:
                 print("Opción incorrecta.")
-        print()
-    
+        print()  
 
+    
     def jugada(self):
         print(f"Ronda {self.ronda+1}: ")
         aux = self.ronda % 2
@@ -286,8 +310,10 @@ if __name__=='__main__':
     partida.iniciaPartida()
     #print(partida.jugadores[0].fichas)
     #print(partida.jugadores[1].fichas)
+    jugadaConTiempo = tiempo_transcurrido(partida.jugada)
     while not(partida.fin):
-        partida.jugada()
+        jugadaConTiempo()
+        #partida.jugada()
         partida.revisarVictoria()
     
     
