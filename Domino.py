@@ -122,6 +122,17 @@ class Tablero:
             print('La ficha ya esta en el tablero.')
                     
         return success
+    
+
+    def fichasNoColocadas(self):
+        res = []
+        for i in range(7):
+            for j in range(i,7):
+                aux = tuple([i,j])
+                if self.fichas[aux] == 0:
+                    res.append(aux)
+    
+        return res
                     
 
     def valoraTablero():
