@@ -60,6 +60,9 @@ class Tablero:
         
         
     def imprimeTablero(self):
+        """
+        Imprime el tablero en la linea de comandos
+        """
         tabla = """
                     +---+---+---+
                     | {} |...| {} |
@@ -70,6 +73,11 @@ class Tablero:
 
 
     def primerFicha(self, ficha, idJugador):
+        """
+        Hacer el primer movimiento.
+        IN: ficha -> int[2]
+            idJugador -> int 
+        """
         if self.left==-1 and self.right==-1:
             self.left = ficha[0]
             self.right = ficha[1]
@@ -77,6 +85,12 @@ class Tablero:
 
 
     def colocarFicha(self, ficha, lado, idJugador):
+        """
+        Agregar una ficha al tablero
+        IN: ficha -> int[2]
+            lado -> char
+            idJugador -> int
+        """
         success = -1
         
         if self.fichas[ficha] == 0:
@@ -124,6 +138,9 @@ class Jugador:
 
 
     def numFichas(self):
+        """
+        Devuelve el número de fichas que tiene un jugador
+        """
         return len(self.fichas)
 
 
@@ -149,6 +166,9 @@ class CPU(Jugador):
 
 
     def inicializarFichas(self):
+        """
+        Ingresar las fichas asignadas al CPU
+        """
         print('\t\tIngresa las 7 fichas.')
         for i in range(7):
             bandera = False
@@ -160,6 +180,11 @@ class CPU(Jugador):
 
 
     def darFicha(self, ficha):
+        """
+        Validar que la ficha no esté repetida
+        IN: ficha -> int [2]
+        OUT: success -> bool
+        """
         success = False
         if ficha not in self.fichas:
             self.fichas.append(ficha)
@@ -170,18 +195,36 @@ class CPU(Jugador):
 
 
     def minmax(self, node, depth, maxPlayer):
+        """
+        Algoritmo de búsqueda MINIMAX
+        IN: node -> Node
+            depth -> int
+            maxPlayer -> bool
+        """
         pass
     
 
     def heuristica(self):
+        """
+        Función heurística: evalúa un estado del juego y asigna un valor
+        dependiendo del jugador al que más favorezca.
+        """
         pass
 
 
     def primerMovimiento(self, tablero):
+        """
+        Primer movimiento del CPU
+        In: tablero -> Tablero
+        """
         print('No implementado')
     
 
     def movimiento(self, tablero):
+        """
+        Hacer un movimiento del CPU
+        In: tablero -> Tablero
+        """
         print('No implementado')
             
 
@@ -191,6 +234,10 @@ class JugadorHumano(Jugador):
 
 
     def primerMovimiento(self, tablero):
+        """
+        Primer movimiento del jugador humano
+        In: tablero -> Tablero
+        """
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
         bandera = True
         while bandera:
@@ -203,6 +250,10 @@ class JugadorHumano(Jugador):
 
 
     def movimiento(self, tablero):
+        """
+        Movimiento del Jugador Humano (por consola)
+        In: tablero -> Tablero
+        """
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
         bandera = True
         self.pasar = False
@@ -247,6 +298,10 @@ class Partida():
 
 
     def crearJugadores(self):
+        """
+        Dar de alta los nombres de los jugadores,
+        si se elige CPU entonces juega la máquina
+        """
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
         name1 = input("\tJugador 1:\n\t\t→ ")
         if name1 != 'CPU':
@@ -288,6 +343,9 @@ class Partida():
 
     
     def jugada(self):
+        """
+        Movimiento de alguno de los jugadores
+        """
         print(f"Ronda {self.ronda+1}: ")
         aux = self.ronda % 2
 
@@ -298,6 +356,9 @@ class Partida():
         
 
     def revisarVictoria(self):
+        """
+        Revisar si alguien ya ganó la partida
+        """
         if not (self.jugadores[0].pasar and self.jugadores[1].pasar): 
             if self.jugadores[0].numFichas()==0:
                 print(f"El jugador {self.jugadores[0].nombre} ganó.")
@@ -311,6 +372,9 @@ class Partida():
                 
             
     def iniciaPartida(self):
+        """
+        Iniciar una partida
+        """
         self.crearJugadores()
         self.jugadores[0].primerMovimiento(self.tablero)
         self.tablero.imprimeTablero()
