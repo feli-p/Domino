@@ -1,5 +1,5 @@
 """
-Losa lucines gpt.
+Equipo 0: Losa lucines gpt.
 Inteligencia Artificial. ITAM.
 
 Proyecto 1: Dominó con minimax
@@ -125,6 +125,10 @@ class Tablero:
     
 
     def fichasNoColocadas(self):
+        """
+        Regresa una lista con las fichas que no han sido colocadas en el tablero.
+        Out:    res - lista de fichas en formato tupla.
+        """
         res = []
         for i in range(7):
             for j in range(i,7):
@@ -167,6 +171,9 @@ class JugadorHumano(Jugador):
     Administra las jugadas que los usuarios le proporcionan verificando siempre su validez.
     """
     def inicializarFichas(self):
+        """
+        Establece una lista con el 
+        """
         self.fichas = [1]*7
 
 
@@ -451,6 +458,29 @@ class Nodo():
                 resp.append(aux[1])
 
         return resp
+    
+    def probabilidadDeTiro(self):
+        """
+        Cuando el CPU lanza una ficha, calculamos una probabilidad aproximada de que el rival responda.
+        Cuando el nodo proviene de una ficha lanzada por el rival, regresamos 1.
+        Out:    prob - float con la probabilidad de que el rival tenga la ficha, 1 en el otro caso descrito.
+        """
+        prob = 1
+        if not self.turnoCPU:
+            tl = 0
+            tr = 0
+            tot = len(self.fichasDesconocidas)
+            for x in self.fichasDesconocidas:
+                if self.left in x:
+                    tl += 1
+                if self.right in x:
+                    tr += 1
+            if self.left == self.right:
+                prob = tl/tot
+            else:
+                prob = tl+tr/tot
+                    
+        return prob 
 
 
 class Partida():
