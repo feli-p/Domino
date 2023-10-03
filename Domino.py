@@ -21,7 +21,7 @@ def tiempo_transcurrido(f):
         # Regresa el valor de la función original.
         fun = f()
         tiempo_total = time() - inicio
-        print("Tiempo transcurrido: %0.10f segundos." % tiempo_total)
+        print("Tiempo transcurrido: %0.4f segundos." % tiempo_total)
         return fun
     
     return wrapper
@@ -29,21 +29,22 @@ def tiempo_transcurrido(f):
 
 def creaFicha(txt):
     """
-    Función para pedir fichas válidas al usuario.
+    Función para pedir fichas al usuario, verificar que sean válidas y darles el formato correcto.
+    In:     txt - cadena de texto con la información de la ficha.
+    Out:    res - None si no se puede crear la ficha o una ficha formateada como tupla.
     """
+    res = None
     ficha = re.findall("\d",txt)
-    ficha = [int(x) for x in ficha]
     if len(ficha) == 2:
+        ficha = [int(x) for x in ficha]
         if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
             ficha.sort()
-            ficha = tuple(ficha)
+            res = tuple(ficha)
         else:
             print('Ficha inexistente.')
     else:
         print("Entrada inválida.")
-        ficha = None
-    return ficha
-    
+    return res    
 
 
 class Tablero:
@@ -116,6 +117,10 @@ class Tablero:
 
 
 class Jugador:
+    """
+    Define la clase genérica de Jugador sobre la cual se crearán CPU y JugadorHumano.
+    Esta clase contiene las funciones genéricas de los jugadores.
+    """
     def __init__(self):
         self.nombre = ""
         self.id = 0
@@ -127,23 +132,11 @@ class Jugador:
         return len(self.fichas)
 
 
-    """def validaFicha(self, ficha):
-        success = False
-        if type(ficha) is tuple and len(ficha) == 2:
-            if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
-                if ficha not in self.fichas:
-                    success = True
-                else:
-                    print("Ficha repetida")
-            else:
-                print("Ficha inexistente")
-        else:
-            print("Formato inválido")
-        return success
-        """
-
-
 class CPU(Jugador):
+    """
+    Jugador de Dominó automatizado con Inteligencia Artificial.
+    Utiliza un algoritmo minimax para buscar el mejor movimiento disponible de acuerdo a una heurística.
+    """
     def __init__(self):
         super().__init__()
 
@@ -186,6 +179,10 @@ class CPU(Jugador):
             
 
 class JugadorHumano(Jugador):
+    """
+    Esta clase permite que los usuarios jueguen contra la computadora.
+    Maneja la 
+    """
     def inicializarFichas(self):
         self.fichas = [1]*7
 
@@ -273,7 +270,7 @@ class Partida():
         print('[2] {}'.format(jugador2.nombre))
         bandera = True
         while bandera:
-            jugador = input("-> ")
+            jugador = input("→ ")
             if jugador=="1":
                 self.jugadores.append(jugador1)
                 self.jugadores.append(jugador2)
