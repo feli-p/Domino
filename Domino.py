@@ -91,7 +91,7 @@ class Tablero:
         In:     ficha - ficha en formato tupla.
                 lado - char que indica en qué lado colocar la ficha.
                 idJugador - identificador del jugador para llevar registro.
-        Out:    success - Booleano que indica si se logró colocar la ficha.
+        Out:    success - booleano que indica si se logró colocar la ficha.
         """
         success = False
         
@@ -336,6 +336,10 @@ class CPU(Jugador):
                 
 
 class Nodo():
+    """
+    Generaliza un estado del Dominó.
+    Ayuda a generar los estados futuros de la partida y a evaluar la función heurística.
+    """
     def __init__(self):
         self.turnoCPU = True
         self.fichasCPU = []
@@ -348,6 +352,13 @@ class Nodo():
 
         
     def iniciaHijo(self, ficha, isLeft, valor):
+        """
+        Genera uno de los nodos hijo del nodo actual.
+        In:     ficha - ficha en formato tupla.
+                isLeft - booleano que indica si la ficha se coloca a la izquierda.
+                valor - contiene el nuevo valor que quedará al extremo del tablero.
+        Out:    hijo - nuevo nodo obtenido al colocar la ficha.
+        """
         hijo = Nodo()
         hijo.turnoCPU = not(self.turnoCPU)
         hijo.pozo = self.pozo
@@ -374,28 +385,39 @@ class Nodo():
             
         
     def creaHijos(self, ficha):
+        """
+        Dada una ficha, utiliza la función iniciaHijo() para crear los posibles nodos futuros.
+        In:     ficha - ficha en formato tupla.
+        Out:    hijos - lista de nodos hijos.
+        """
         hijos = []
         
         if ficha[0]==self.left:
-            hijo = self.iniciaHijo(ficha, True, ficha[0])
+            hijo = self.iniciaHijo(ficha, True, ficha[1])
             hijos.append(hijo)
 
         if ficha[0]==self.right and self.left != self.right:
-            hijo = self.iniciaHijo(ficha, False, ficha[0])
-            hijos.append(hijo)
-            
-        if ficha[1]==self.left and ficha[0]!=ficha[1]:
-            hijo = self.iniciaHijo(ficha, True, ficha[1])
-            hijos.append(hijo)
-            
-        if ficha[1]==self.right and ficha[0]!=ficha[1] and self.left!=self.right:
             hijo = self.iniciaHijo(ficha, False, ficha[1])
-            hijos.append(hijos)
+            hijos.append(hijo)
+
+        if ficha[0]!=ficha[1]:
+            if ficha[1]==self.left:
+                hijo = self.iniciaHijo(ficha, True, ficha[0])
+                hijos.append(hijo)
+                
+            if ficha[1]==self.right and self.left!=self.right:
+                hijo = self.iniciaHijo(ficha, False, ficha[0])
+                hijos.append(hijos)
 
         return hijos
 
         
     def expande(self):
+        """
+        Utiliza creaHijos() para generar los nodos a los que se puede llegar a partir del actual cuando colocamos una ficha.
+        Toma las fichas correspondientes dependiendo de quién es el jugador en turno.
+        Out:    resp - Lista con los nodos hijos
+        """
         resp = []
         fichas = self.fichasCPU if self.turnoCPU else self.fichasDesconocidas
         
@@ -412,7 +434,7 @@ class Nodo():
 
 class Partida():
     """
-    Clase que administra la lógica de una partida de dominó para dos jugadores.
+    Clase que administra la lógica de una partida de Dominó para dos jugadores.
     Instancia un tablero y un par de jugadores.
     """
     def __init__(self):
