@@ -315,7 +315,7 @@ class CPU(Jugador):
             else:
                 resp = -1000000
         else:
-            resp = random.randint(0,100)
+            resp = random.randint(0,100)/nodo.probabilidadDeTiro()
 
         return resp
 
