@@ -246,10 +246,11 @@ class CPU(Jugador):
         for i in range(7):
             bandera = False
             while not bandera:
-                aux = input(f'Ingresa la ficha {i} →')
+                aux = input(f'Ingresa la ficha {i} → ')
                 aux = creaFicha(aux)
                 if bool(aux):
                     bandera = self.darFicha(aux)
+        print()
 
 
     def darFicha(self, ficha):
@@ -294,7 +295,7 @@ class CPU(Jugador):
         Primer movimiento del CPU
         In: tablero -> Tablero
         """
-        tablero.pimerFicha(self.fichas[0],self.id)
+        tablero.primerFicha(self.fichas[0],self.id)
         self.fichas = self.fichas[1:]
     
 
@@ -313,8 +314,8 @@ class CPU(Jugador):
             estadoActual.turnoCPU = True
             estadoActual.fichasCPU = self.fichas
             estadoActual.fichasDesconocidas = tablero.fichasNoColocadas()
-            estadoActual.left = self.left
-            estadoActual.right = self.right
+            estadoActual.left = tablero.left
+            estadoActual.right = tablero.right
             estadoActual.pozo = tablero.pozo
 
             acciones = estadoActual.expande()
@@ -326,24 +327,33 @@ class CPU(Jugador):
                     index = i
                     mejorValor = val
 
-        if index==-1 and tablero.pozo>0:
-            bandera2 = False
-            while not bandera2:
-                aux = input(f'Ingresa la ficha a comer →')
-                aux = creaFicha(aux)
-                if bool(aux):
-                    bandera2 = self.darFicha(aux)
-        elif index==-1 and tablero.pozo==0:
-            self.pasar = True
-            print('Paso.')
-            bandera = False
-        else:
-            if acciones[index].isLeft:
-                tablero.colocarFicha(acciones[index].fichaPadre, 'I', self.id)
+            if index==-1 and tablero.pozo>0:
+                bandera2 = False
+                while not bandera2:
+                    aux = input(f'Ingresa la ficha a comer →')
+                    aux = creaFicha(aux)
+                    if bool(aux):
+                        bandera2 = self.darFicha(aux)
+                        tablero.pozo -= 1
+                        print('Como.')
+            elif index==-1 and tablero.pozo==0:
+                self.pasar = True
+                print('Paso.')
+                bandera = False
             else:
-                tablero.colocarFicha(acciones[index].fichaPadre, 'D', self.id)
-            self.fichas.remove(acciones[index].fichaPadre)
-
+                #print(acciones)
+                #print(acciones[index])
+                if acciones[index].isLeft:
+                    tablero.colocarFicha(acciones[index].fichaPadre, 'I', self.id)
+                    self.fichas.remove(acciones[index].fichaPadre)
+                    bandera = False
+                    print(f'Tiro la ficha {acciones[index].fichaPadre}')
+                else:
+                    tablero.colocarFicha(acciones[index].fichaPadre, 'D', self.id)
+                    self.fichas.remove(acciones[index].fichaPadre)
+                    bandera = False
+                    print(f'Tiro la ficha {acciones[index].fichaPadre}')
+            
                 
 
 class Nodo():
@@ -418,7 +428,7 @@ class Nodo():
                 
             if ficha[1]==self.right and self.left!=self.right:
                 hijo = self.iniciaHijo(ficha, False, ficha[0])
-                hijos.append(hijos)
+                hijos.append(hijo)
 
         return hijos
 
@@ -525,7 +535,7 @@ class Partida():
                 print(f"El jugador {self.jugadores[0].nombre} ganó.")
                 self.fin = True
             elif self.jugadores[1].numFichas()==0:
-                print(f'El jugador {self.jugadores[0].nombre} ganó.')
+                print(f'El jugador {self.jugadores[1].nombre} ganó.')
                 self.fin = True
         else:
             self.fin = True
@@ -548,13 +558,6 @@ if __name__=='__main__':
         ------------------------------------
           """)
 
-    nodo = Nodo()
-    nodo.fichasCPU = [(1,2),(6,6),(6,5),(1,4)]
-    nodo.left = 4
-    nodo.right = 6
-    print(nodo.expande())
-
-    """
     partida = Partida()
     partida.iniciaPartida()
     #print(partida.jugadores[0].fichas)
@@ -566,4 +569,3 @@ if __name__=='__main__':
         #partida.jugada()
         partida.revisarVictoria()
     
-    """
