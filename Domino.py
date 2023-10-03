@@ -324,15 +324,15 @@ class Nodo():
         hijo = None
         
         if ficha[0]==self.left:
-            hijo = iniciaHijo(ficha, True, ficha[0])
+            hijo = self.iniciaHijo(ficha, True, ficha[0])
         elif ficha[0]==self.right:
-            hijo = iniciaHijo(ficha, False, ficha[0])
+            hijo = self.iniciaHijo(ficha, False, ficha[0])
         elif ficha[1]==self.left:
-            hijo = iniciaHijo(ficha, True, ficha[1])
+            hijo = self.iniciaHijo(ficha, True, ficha[1])
         elif ficha[1]==self.right:
-            hijo = iniciaHijo(ficha, False, ficha[1])
+            hijo = self.iniciaHijo(ficha, False, ficha[1])
 
-        return resp
+        return hijo
 
         
     def expande(self):
@@ -340,7 +340,7 @@ class Nodo():
         fichas = self.fichasCPU if self.turnoCPU else self.fichasDesconocidas
         
         for ficha in fichas:
-            aux = creaHijo(ficha)
+            aux = self.creaHijo(ficha)
             if bool(aux):
                 resp.append(aux)
 
