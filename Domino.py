@@ -276,7 +276,7 @@ class CPU(Jugador):
             depth -> int
             maxPlayer -> bool
         """
-        pass
+        return random.randint(0,100)
     
 
     def heuristica(self, nodo):
@@ -294,7 +294,8 @@ class CPU(Jugador):
         Primer movimiento del CPU
         In: tablero -> Tablero
         """
-        print('No implementado')
+        tablero.pimerFicha(self.fichas[0],self.id)
+        self.fichas = self.fichas[1:]
     
 
     def movimiento(self, tablero):
@@ -303,8 +304,47 @@ class CPU(Jugador):
         Hacer un movimiento del CPU
         In: tablero -> Tablero
         """
-        print('No implementado')
+        bandera = True
+        
+        while bandera:
+            mejorValor = -100000
+            index = -1
+            estadoActual = Nodo()
+            estadoActual.turnoCPU = True
+            estadoActual.fichasCPU = self.fichas
+            estadoActual.fichasDesconocidas = tablero.fichasNoColocadas()
+            estadoActual.left = self.left
+            estadoActual.right = self.right
+            estadoActual.pozo = tablero.pozo
 
+            acciones = estadoActual.expande()
+            
+            for i,nodo in enumerate(acciones):    
+                val = self.minimax(nodo,2,False)
+
+                if val > mejorValor:
+                    index = i
+                    mejorValor = val
+
+        if index==-1 and tablero.pozo>0:
+            bandera2 = False
+            while not bandera2:
+                aux = input(f'Ingresa la ficha a comer →')
+                aux = creaFicha(aux)
+                if bool(aux):
+                    bandera2 = self.darFicha(aux)
+        elif index==-1 and tablero.pozo==0:
+            self.pasar = True
+            print('Paso.')
+            bandera = False
+        else:
+            if acciones[index].isLeft:
+                tablero.colocarFicha(acciones[index].fichaPadre, 'I', self.id)
+            else:
+                tablero.colocarFicha(acciones[index].fichaPadre, 'D', self.id)
+            self.fichas.remove(acciones[index].fichaPadre)
+
+                
 
 class Nodo():
     """
@@ -318,6 +358,8 @@ class Nodo():
         self.left = -1
         self.right = -1
         self.pozo = -1
+        self.fichaPadre = None
+        self.isLeft = None
 
         
     def iniciaHijo(self, ficha, isLeft, valor):
@@ -333,6 +375,8 @@ class Nodo():
         hijo.pozo = self.pozo
         hijo.fichasCPU = self.fichasCPU[::]
         hijo.fichasDesconocidas = self.fichasDesconocidas[::]
+        hijo.fichaPadre = ficha
+        hijo.isLeft = isLeft
         
         if self.turnoCPU:    
             hijo.fichasCPU.remove(ficha)    
