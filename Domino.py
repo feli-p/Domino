@@ -269,7 +269,7 @@ class CPU(Jugador):
         return success
 
 
-    def minimax(self, node, depth, maxPlayer):
+    def minimax(self, nodo, depth, maxPlayer):
         # Documentación final pendiente
         """
         Algoritmo de búsqueda MINIMAX
@@ -277,7 +277,21 @@ class CPU(Jugador):
             depth -> int
             maxPlayer -> bool
         """
-        return random.randint(0,100)
+        if depth==0 or nodo.isHoja():
+            return self.heuristica(nodo)
+        
+        if maxPlayer:
+            mejorValor = -10000
+            for accion in nodo.expande():
+                val = self.minimax(accion, depth-1, False)
+                mejorValor = max(mejorValor,val)
+            return mejorValor
+        else:
+            mejorValor = 10000
+            for accion in nodo.expande():
+                val = self.minimax(accion, depth-1, True)
+                mejorValor = min(mejorValor, val)
+            return mejorValor
     
 
     def heuristica(self, nodo):
@@ -286,7 +300,17 @@ class CPU(Jugador):
         Función heurística: evalúa un estado del juego y asigna un valor
         dependiendo del jugador al que más favorezca.
         """
-        pass
+        resp = 0
+
+        if nodo.isHoja:
+            if len(nodo.fichasCPU)==0:
+                resp =  1000000
+            else:
+                resp = -1000000
+        else:
+            resp = random.randint(0,100)
+
+        return resp
 
 
     def primerMovimiento(self, tablero):
@@ -321,7 +345,7 @@ class CPU(Jugador):
             acciones = estadoActual.expande()
             
             for i,nodo in enumerate(acciones):    
-                val = self.minimax(nodo,2,False)
+                val = self.minimax(nodo,10,False)
 
                 if val > mejorValor:
                     index = i
@@ -370,6 +394,12 @@ class Nodo():
         self.pozo = -1
         self.fichaPadre = None
         self.isLeft = None
+
+
+    def isHoja(self):
+        resp = len(self.fichasCPU)==0
+        resp = resp or (len(self.fichasDesconocidas)==0)
+        return resp
 
         
     def iniciaHijo(self, ficha, isLeft, valor):
