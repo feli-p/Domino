@@ -265,7 +265,7 @@ class CPU(Jugador):
         Asigna una ficha a la lista de fichas del CPU.
         Valida que la ficha no esté repetida.
         In:     ficha - ficha en formato tupla.
-        Out:    success - Booleano que indica si se logró añadir la ficha.
+        Out:    success - booleano que indica si se logró añadir la ficha.
         """
         success = False
         if ficha not in self.fichas:
@@ -277,12 +277,12 @@ class CPU(Jugador):
 
 
     def minimax(self, nodo, depth, maxPlayer):
-        # Documentación final pendiente
         """
-        Algoritmo de búsqueda MINIMAX
-        IN: node -> Node
-            depth -> int
-            maxPlayer -> bool
+        Función recursiva que describe el algoritmo de búsqueda minimax.
+        In:     nodo - nodo que describe un posible estado de la partida.
+                depth - entero que indica la profundidad de la búsqueda.
+                maxPlayer - booleano que indica si es el jugador que maximiza.
+        Out:    res - valor minimax del nodo.
         """
         if depth==0 or nodo.isHoja():
             return self.heuristica(nodo)
@@ -302,10 +302,10 @@ class CPU(Jugador):
     
 
     def heuristica(self, nodo):
-        # Documentación final pendiente
         """
-        Función heurística: evalúa un estado del juego y asigna un valor
-        dependiendo del jugador al que más favorezca.
+        Función heurística: evalúa un estado del juego y le asigna un mayor valor entre más le favorezca al CPU.
+        In:     nodo - nodo que describe un posible estado de la partida.
+        Out:    resp - valor eurístico del nodo.
         """
         resp = 0
 
@@ -321,20 +321,18 @@ class CPU(Jugador):
 
 
     def primerMovimiento(self, tablero):
-        # Documentación final pendiente
         """
-        Primer movimiento del CPU
-        In: tablero -> Tablero
+        Primer movimiento del CPU. Suelta una ficha para iniciar el juego.
+        In:     tablero - referencia al tablero.
         """
         tablero.primerFicha(self.fichas[0],self.id)
         self.fichas = self.fichas[1:]
     
 
     def movimiento(self, tablero):
-        # Documentación final pendiente
         """
-        Hacer un movimiento del CPU
-        In: tablero -> Tablero
+        Define la lógica para que el CPU haga un movimiento. Implementa el algoritmo minimax con una heurística.
+        In:     tablero - referencia al tablero.
         """
         bandera = True
         
