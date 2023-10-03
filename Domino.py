@@ -13,8 +13,9 @@ import re
 
 def tiempo_transcurrido(f):
     """
-    Decorador.
-    Ejecuta la función y calcula el tiempo transcurrido.
+    Decorador que ejecuta la función y calcula el tiempo transcurrido.
+    In:     f - función a ejecutar.
+    Out:    Ejecuta la función e imprime el tiempo que demoró en ejecutar.
     """
     def wrapper():
         inicio = time()
@@ -62,22 +63,21 @@ class Tablero:
         
     def imprimeTablero(self):
         """
-        Imprime el tablero en la linea de comandos
+        Imprime el tablero en el standard output (consola).
         """
         tabla = """
                     +---+---+---+
                     | {} |...| {} |
                     +---+---+---+
                 """
-
         print(tabla.format(self.left,self.right))
 
 
     def primerFicha(self, ficha, idJugador):
         """
-        Hacer el primer movimiento.
-        IN: ficha -> int[2]
-            idJugador -> int 
+        Inicializa el tablero con la primer ficha.
+        In:     ficha - ficha en formato tupla.
+                idJugador - identificador del jugador para llevar registro.
         """
         if self.left==-1 and self.right==-1:
             self.left = ficha[0]
@@ -88,33 +88,34 @@ class Tablero:
     def colocarFicha(self, ficha, lado, idJugador):
         """
         Agregar una ficha al tablero
-        IN: ficha -> int[2]
-            lado -> char
-            idJugador -> int
+        In:     ficha - ficha en formato tupla.
+                lado - char que indica en qué lado colocar la ficha.
+                idJugador - identificador del jugador para llevar registro.
+        Out:    success - Booleano que indica si se logró colocar la ficha.
         """
-        success = -1
+        success = False
         
         if self.fichas[ficha] == 0:
             if lado=='I':
                 if ficha[0]==self.left:
                     self.left = ficha[1]
                     self.fichas[ficha] = idJugador
-                    success = 1
+                    success = True
                 elif ficha[1]==self.left:
                     self.left = ficha[0]
                     self.fichas[ficha] = idJugador
-                    success = 1
+                    success = True
                 else:
                     print('Movimiento invalido')
             else:
                 if ficha[0]==self.right:
                     self.right = ficha[1]
                     self.fichas[ficha] = idJugador
-                    success = 1
+                    success = True
                 elif ficha[1]==self.right:
                     self.right = ficha[0]
                     self.fichas[ficha] = idJugador
-                    success = 1
+                    success = True
                 else:
                     print('Movimiento invalido')
         else:
@@ -144,15 +145,15 @@ class Jugador:
 
     def numFichas(self):
         """
-        Devuelve el número de fichas que tiene un jugador
+        Devuelve el número de fichas que tiene un jugador.
         """
         return len(self.fichas)
 
 
 class JugadorHumano(Jugador):
     """
-    Esta clase permite que los usuarios jueguen contra la computadora.
-    Maneja la 
+    Esta clase permite que los usuarios juegen contra la computadora.
+    Administra las jugadas que los usuarios le proporcionan verificando siempre su validez.
     """
     def inicializarFichas(self):
         self.fichas = [1]*7
@@ -160,8 +161,9 @@ class JugadorHumano(Jugador):
 
     def primerMovimiento(self, tablero):
         """
-        Primer movimiento del jugador humano
-        In: tablero -> Tablero
+        Maneja la lógica para abrir la partida con el movimiento de un usuario.
+        Pregunta al usuario por una ficha y la verifica usando creaFicha().
+        In:     tablero - recibe un apuntador al tablero para colocar la ficha.
         """
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
         bandera = True
@@ -176,8 +178,9 @@ class JugadorHumano(Jugador):
 
     def movimiento(self, tablero):
         """
-        Movimiento del Jugador Humano (por consola)
-        In: tablero -> Tablero
+        Movimiento del Jugador Humano utilizando el standard input (consola).
+        Pregunta al usuario por una ficha y la verifica usando creaFicha().
+        In:     tablero - recibe un apuntador al tablero para colocar la ficha.
         """
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
         bandera = True
@@ -202,11 +205,11 @@ class JugadorHumano(Jugador):
                     print('¿De que lado? [I/D]')
                     lado = input('→ ')
                     if lado.upper() == 'D':
-                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                        bandera = not(tablero.colocarFicha(movi, 'D', self.id))
                         if not bandera:
                             self.fichas = self.fichas[:-1] #Quitamos una ficha
                     elif lado.upper() == 'I':
-                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                        bandera = not(tablero.colocarFicha(movi, 'I', self.id))
                         if not bandera:
                             self.fichas = self.fichas[:-1] #Quitamos una ficha
                     else:
@@ -225,7 +228,8 @@ class CPU(Jugador):
 
     def inicializarFichas(self):
         """
-        Ingresar las fichas asignadas al CPU
+        Ingresa las fichas asignadas al CPU.
+        Pregunta al usuario por las fichas y las verifica usando creaFicha().
         """
         print('\t\tIngresa las 7 fichas.')
         for i in range(7):
@@ -239,9 +243,10 @@ class CPU(Jugador):
 
     def darFicha(self, ficha):
         """
-        Validar que la ficha no esté repetida
-        IN: ficha -> int [2]
-        OUT: success -> bool
+        Asigna una ficha a la lista de fichas del CPU.
+        Valida que la ficha no esté repetida.
+        In:     ficha - ficha en formato tupla.
+        Out:    success - Booleano que indica si se logró añadir la ficha.
         """
         success = False
         if ficha not in self.fichas:
@@ -252,7 +257,8 @@ class CPU(Jugador):
         return success
 
 
-    def minmax(self, node, depth, maxPlayer):
+    def minimax(self, node, depth, maxPlayer):
+        # Documentación final pendiente
         """
         Algoritmo de búsqueda MINIMAX
         IN: node -> Node
@@ -263,6 +269,7 @@ class CPU(Jugador):
     
 
     def heuristica(self):
+        # Documentación final pendiente
         """
         Función heurística: evalúa un estado del juego y asigna un valor
         dependiendo del jugador al que más favorezca.
@@ -271,6 +278,7 @@ class CPU(Jugador):
 
 
     def primerMovimiento(self, tablero):
+        # Documentación final pendiente
         """
         Primer movimiento del CPU
         In: tablero -> Tablero
@@ -279,6 +287,7 @@ class CPU(Jugador):
     
 
     def movimiento(self, tablero):
+        # Documentación final pendiente
         """
         Hacer un movimiento del CPU
         In: tablero -> Tablero
@@ -295,22 +304,16 @@ class Nodo():
         self.right = -1
         self.pozo = -1
 
-
-    def validaMovimiento(self, ficha):
-        resp = False
-        
-        if ficha[0]==left or ficha[0]==right:
-            resp = True
-        elif ficha[1]==left or ficha[1]==right:
-            resp = True
-
-        return resp
         
     def expande(self):
         pass
 
 
 class Partida():
+    """
+    Clase que administra la lógica de una partida de dominó para dos jugadores.
+    Instancia un tablero y un par de jugadores.
+    """
     def __init__(self):
         self.tablero = Tablero()
         self.ronda = 1
@@ -320,8 +323,8 @@ class Partida():
 
     def crearJugadores(self):
         """
-        Dar de alta los nombres de los jugadores,
-        si se elige CPU entonces juega la máquina
+        Se crea un par de jugadores.
+        Si se escribe "CPU" como el nombre de algún jugador entonces la máquina.
         """
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
         name1 = input("\tJugador 1:\n\t\t→ ")
@@ -367,7 +370,7 @@ class Partida():
         """
         Movimiento de alguno de los jugadores
         """
-        print(f"Ronda {self.ronda+1}: ")
+        print(f"\nRonda {self.ronda+1}: ")
         aux = self.ronda % 2
 
         self.jugadores[aux].movimiento(self.tablero)
