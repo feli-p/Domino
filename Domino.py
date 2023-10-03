@@ -268,7 +268,7 @@ class CPU(Jugador):
         pass
     
 
-    def heuristica(self):
+    def heuristica(self, nodo):
         # Documentación final pendiente
         """
         Función heurística: evalúa un estado del juego y asigna un valor
@@ -329,29 +329,39 @@ class Nodo():
         return hijo
             
         
-    def creaHijo(self, ficha):
-        hijo = None
+    def creaHijos(self, ficha):
+        hijos = []
         
         if ficha[0]==self.left:
             hijo = self.iniciaHijo(ficha, True, ficha[0])
-        elif ficha[0]==self.right:
-            hijo = self.iniciaHijo(ficha, False, ficha[0])
-        elif ficha[1]==self.left:
-            hijo = self.iniciaHijo(ficha, True, ficha[1])
-        elif ficha[1]==self.right:
-            hijo = self.iniciaHijo(ficha, False, ficha[1])
+            hijos.append(hijo)
 
-        return hijo
+        if ficha[0]==self.right and self.left != self.right:
+            hijo = self.iniciaHijo(ficha, False, ficha[0])
+            hijos.append(hijo)
+            
+        if ficha[1]==self.left and ficha[0]!=ficha[1]:
+            hijo = self.iniciaHijo(ficha, True, ficha[1])
+            hijos.append(hijo)
+            
+        if ficha[1]==self.right and ficha[0]!=ficha[1] and self.left!=self.right:
+            hijo = self.iniciaHijo(ficha, False, ficha[1])
+            hijos.append(hijos)
+
+        return hijos
 
         
     def expande(self):
         resp = []
         fichas = self.fichasCPU if self.turnoCPU else self.fichasDesconocidas
         
-        for ficha in fichas:
-            aux = self.creaHijo(ficha)
-            if bool(aux):
-                resp.append(aux)
+        for ficha in fichas:              
+            aux = self.creaHijos(ficha)
+            if len(aux)==1:
+                resp.append(aux[0])
+            elif len(aux)==2:
+                resp.append(aux[0])
+                resp.append(aux[1])
 
         return resp
 
