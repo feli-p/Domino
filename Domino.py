@@ -10,7 +10,7 @@ from time import time
 import numpy as np
 import re
 
-# no funciona
+
 def tiempo_transcurrido(f):
     """
     Decorador.
@@ -27,6 +27,25 @@ def tiempo_transcurrido(f):
     return wrapper
 
 
+def creaFicha(txt):
+    """
+    Función para pedir fichas válidas al usuario.
+    """
+    ficha = re.findall("\d",txt)
+    ficha = [int(x) for x in ficha]
+    if len(ficha) == 2:
+        if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
+            ficha.sort()
+            ficha = tuple(ficha)
+        else:
+            print('Ficha inexistente.')
+    else:
+        print("Entrada inválida.")
+        ficha = None
+    return ficha
+    
+
+
 class Tablero:
     """
     Generalización del tablero de Dominó.
@@ -38,8 +57,8 @@ class Tablero:
         self.right = -1
         self.fichas = np.zeros((7,7))
         self.pozo = 14
-       
-
+        
+        
     def imprimeTablero(self):
         tabla = """
                     +---+---+---+
@@ -108,7 +127,7 @@ class Jugador:
         return len(self.fichas)
 
 
-    def validaFicha(self, ficha):
+    """def validaFicha(self, ficha):
         success = False
         if type(ficha) is tuple and len(ficha) == 2:
             if 0 <= ficha[0] <= 6 and 0 <= ficha[1] <= 6:
@@ -121,6 +140,7 @@ class Jugador:
         else:
             print("Formato inválido")
         return success
+        """
 
 
 class CPU(Jugador):
@@ -129,22 +149,23 @@ class CPU(Jugador):
 
 
     def inicializarFichas(self):
+        print('\t\tIngresa las 7 fichas.')
         for i in range(7):
-            bandera = True
-            while bandera:
-                aux = input("Ingresa ficha: \t").split(",")
-                aux = [int(x) for x in aux]
-                aux.sort()
-                aux = tuple(aux)
-                # Usar un try-except
-                bandera = self.darFicha(aux) == -1
+            bandera = False
+            while not bandera:
+                aux = input(f'Ingresa la ficha {i} →')
+                aux = creaFicha(aux)
+                if bool(aux):
+                    bandera = self.darFicha(aux)
 
 
     def darFicha(self, ficha):
-        success = -1
-        if self.validaFicha(ficha):
+        success = False
+        if ficha not in self.fichas:
             self.fichas.append(ficha)
-            success = 1
+            success = True
+        else:
+            print("Ficha repetida")
         return success
 
 
@@ -173,13 +194,9 @@ class JugadorHumano(Jugador):
         print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
         bandera = True
         while bandera:
-            # usar try - except
-            movi = input('-> ')
-            movi = re.split(r',|-|\.', movi)
-            movi = [int(x) for x in movi]
-            movi.sort()
-            movi = tuple(movi)
-            if self.validaFicha(movi):
+            movi = input('→')
+            movi = creaFicha(movi)
+            if bool(movi): # Se cumple si movi es distinto None
                 tablero.primerFicha(movi,self.id)
                 self.fichas = self.fichas[:-1] #Quitamos una ficha
                 bandera = False
@@ -190,10 +207,13 @@ class JugadorHumano(Jugador):
         bandera = True
         self.pasar = False
         while bandera:
-            movi = input('-> ')
+            movi = input('→ ')
             if movi == '0':
-                self.pasar = True
-                bandera = False
+                if tablero.pozo == 0:
+                    self.pasar = True
+                    bandera = False
+                else:
+                    print('Aún hay fichas en el pozo.')
             elif movi == '1':
                 if tablero.pozo > 0:
                     self.fichas.append(1) #agregamos una ficha
@@ -201,13 +221,10 @@ class JugadorHumano(Jugador):
                 else:
                     print('El pozo está vacío.')
             else:
-                movi = re.split(r',|-|\.', movi)
-                movi = [int(x) for x in movi]
-                movi.sort()
-                movi = tuple(movi)
-                if self.validaFicha(movi):
+                movi = creaFicha(movi)
+                if bool(movi):
                     print('¿De que lado? [I/D]')
-                    lado = input('-> ')
+                    lado = input('→ ')
                     if lado.upper() == 'D':
                         bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
                         if not bandera:
@@ -217,7 +234,7 @@ class JugadorHumano(Jugador):
                         if not bandera:
                             self.fichas = self.fichas[:-1] #Quitamos una ficha
                     else:
-                        print('Movimiento no valido. Ingresa la ficha de nuevo.')
+                        print('Lado no válido. Ingresa la ficha de nuevo.')
         print(self.numFichas())
 
 
@@ -231,7 +248,7 @@ class Partida():
 
     def crearJugadores(self):
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
-        name1 = input("\tJugador 1:\n\t\t-> ")
+        name1 = input("\tJugador 1:\n\t\t→ ")
         if name1 != 'CPU':
             jugador1 = JugadorHumano()
             jugador1.nombre = name1
@@ -241,7 +258,7 @@ class Partida():
         jugador1.id = 1
         jugador1.inicializarFichas()
 
-        name2 = input("\tJugador 2:\n\t\t-> ")
+        name2 = input("\tJugador 2:\n\t\t→ ")
         if name2 != 'CPU':
             jugador2 = JugadorHumano()
             jugador2.nombre = name2
