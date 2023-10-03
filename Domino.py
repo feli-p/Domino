@@ -305,8 +305,55 @@ class Nodo():
         self.pozo = -1
 
         
+    def iniciaHijo(self, ficha, isLeft, valor):
+        hijo = Nodo()
+        hijo.turnoCPU = not(self.turnoCPU)
+        hijo.pozo = self.pozo
+        hijo.fichasCPU = self.fichasCPU[::]
+        hijo.fichasDesconocidas = self.fichasDesconocidas[::]
+        
+        if self.turnoCPU:    
+            hijo.fichasCPU.remove(ficha)    
+        else:
+            hijo.fichasDesconocidas.remove(ficha)
+
+        if isLeft:
+            hijo.left = valor
+            hijo.right = self.right
+        else:
+            hijo.right = valor
+            hijo.left = self.left
+
+        hijo.pozo = self.pozo
+
+        return hijo
+            
+        
+    def creaHijo(self, ficha):
+        hijo = None
+        
+        if ficha[0]==self.left:
+            hijo = self.iniciaHijo(ficha, True, ficha[0])
+        elif ficha[0]==self.right:
+            hijo = self.iniciaHijo(ficha, False, ficha[0])
+        elif ficha[1]==self.left:
+            hijo = self.iniciaHijo(ficha, True, ficha[1])
+        elif ficha[1]==self.right:
+            hijo = self.iniciaHijo(ficha, False, ficha[1])
+
+        return hijo
+
+        
     def expande(self):
-        pass
+        resp = []
+        fichas = self.fichasCPU if self.turnoCPU else self.fichasDesconocidas
+        
+        for ficha in fichas:
+            aux = self.creaHijo(ficha)
+            if bool(aux):
+                resp.append(aux)
+
+        return resp
 
 
 class Partida():
@@ -410,7 +457,14 @@ if __name__=='__main__':
             Hecho por: losa lucines gpt
         ------------------------------------
           """)
-    
+
+    nodo = Nodo()
+    nodo.fichasCPU = [(1,2),(6,6),(6,5),(1,4)]
+    nodo.left = 4
+    nodo.right = 6
+    print(nodo.expande())
+
+    """
     partida = Partida()
     partida.iniciaPartida()
     #print(partida.jugadores[0].fichas)
@@ -421,4 +475,4 @@ if __name__=='__main__':
         #partida.jugada()
         partida.revisarVictoria()
     
-    
+    """
