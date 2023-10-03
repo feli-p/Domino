@@ -44,7 +44,7 @@ def creaFicha(txt):
             print('Ficha inexistente.')
     else:
         print("Entrada inválida.")
-    return res    
+    return res
 
 
 class Tablero:
@@ -149,6 +149,71 @@ class Jugador:
         return len(self.fichas)
 
 
+class JugadorHumano(Jugador):
+    """
+    Esta clase permite que los usuarios jueguen contra la computadora.
+    Maneja la 
+    """
+    def inicializarFichas(self):
+        self.fichas = [1]*7
+
+
+    def primerMovimiento(self, tablero):
+        """
+        Primer movimiento del jugador humano
+        In: tablero -> Tablero
+        """
+        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
+        bandera = True
+        while bandera:
+            movi = input('→')
+            movi = creaFicha(movi)
+            if bool(movi): # Se cumple si movi es distinto None
+                tablero.primerFicha(movi,self.id)
+                self.fichas = self.fichas[:-1] #Quitamos una ficha
+                bandera = False
+
+
+    def movimiento(self, tablero):
+        """
+        Movimiento del Jugador Humano (por consola)
+        In: tablero -> Tablero
+        """
+        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
+        bandera = True
+        self.pasar = False
+        while bandera:
+            movi = input('→ ')
+            if movi == '0':
+                if tablero.pozo == 0:
+                    self.pasar = True
+                    bandera = False
+                else:
+                    print('Aún hay fichas en el pozo.')
+            elif movi == '1':
+                if tablero.pozo > 0:
+                    self.fichas.append(1) #agregamos una ficha
+                    tablero.pozo -= 1
+                else:
+                    print('El pozo está vacío.')
+            else:
+                movi = creaFicha(movi)
+                if bool(movi):
+                    print('¿De que lado? [I/D]')
+                    lado = input('→ ')
+                    if lado.upper() == 'D':
+                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
+                        if not bandera:
+                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                    elif lado.upper() == 'I':
+                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
+                        if not bandera:
+                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                    else:
+                        print('Lado no válido. Ingresa la ficha de nuevo.')
+        print(self.numFichas())
+
+
 class CPU(Jugador):
     """
     Jugador de Dominó automatizado con Inteligencia Artificial.
@@ -219,71 +284,20 @@ class CPU(Jugador):
         In: tablero -> Tablero
         """
         print('No implementado')
-            
-
-class JugadorHumano(Jugador):
-    """
-    Esta clase permite que los usuarios jueguen contra la computadora.
-    Maneja la 
-    """
-    def inicializarFichas(self):
-        self.fichas = [1]*7
 
 
-    def primerMovimiento(self, tablero):
-        """
-        Primer movimiento del jugador humano
-        In: tablero -> Tablero
-        """
-        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar?')
-        bandera = True
-        while bandera:
-            movi = input('→')
-            movi = creaFicha(movi)
-            if bool(movi): # Se cumple si movi es distinto None
-                tablero.primerFicha(movi,self.id)
-                self.fichas = self.fichas[:-1] #Quitamos una ficha
-                bandera = False
+class Nodo():
+    def __init__(self):
+        self.turnoCPU = True
+        self.fichasCPU = []
+        self.fichasDesconocidas = []
+        self.left = -1
+        self.right = -1
+        self.pozo = -1
 
 
-    def movimiento(self, tablero):
-        """
-        Movimiento del Jugador Humano (por consola)
-        In: tablero -> Tablero
-        """
-        print(f'Jugador {self.nombre} ¿Qué ficha vas a tirar? [0:Pasar|1:Comer]')
-        bandera = True
-        self.pasar = False
-        while bandera:
-            movi = input('→ ')
-            if movi == '0':
-                if tablero.pozo == 0:
-                    self.pasar = True
-                    bandera = False
-                else:
-                    print('Aún hay fichas en el pozo.')
-            elif movi == '1':
-                if tablero.pozo > 0:
-                    self.fichas.append(1) #agregamos una ficha
-                    tablero.pozo -= 1
-                else:
-                    print('El pozo está vacío.')
-            else:
-                movi = creaFicha(movi)
-                if bool(movi):
-                    print('¿De que lado? [I/D]')
-                    lado = input('→ ')
-                    if lado.upper() == 'D':
-                        bandera = tablero.colocarFicha(movi, 'D', self.id) == -1
-                        if not bandera:
-                            self.fichas = self.fichas[:-1] #Quitamos una ficha
-                    elif lado.upper() == 'I':
-                        bandera = tablero.colocarFicha(movi, 'I', self.id) == -1
-                        if not bandera:
-                            self.fichas = self.fichas[:-1] #Quitamos una ficha
-                    else:
-                        print('Lado no válido. Ingresa la ficha de nuevo.')
-        print(self.numFichas())
+    def expande(self):
+        pass
 
 
 class Partida():
