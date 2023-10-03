@@ -296,6 +296,16 @@ class Nodo():
         self.pozo = -1
 
 
+    def validaMovimiento(self, ficha):
+        resp = False
+        
+        if ficha[0]==left or ficha[0]==right:
+            resp = True
+        elif ficha[1]==left or ficha[1]==right:
+            resp = True
+
+        return resp
+        
     def expande(self):
         pass
 
