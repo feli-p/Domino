@@ -140,7 +140,7 @@ class Jugador:
         self.nombre = ""
         self.id = 0
         self.fichas = []
-        self.pasar = False #Si esta bandera esta prendida el jugador no tiene movimentos validos, por lo que debera pasar
+        self.pasar = False # Si esta bandera esta prendida el jugador no tiene movimentos validos, por lo que debera pasar
 
 
     def numFichas(self):
@@ -172,7 +172,7 @@ class JugadorHumano(Jugador):
             movi = creaFicha(movi)
             if bool(movi): # Se cumple si movi es distinto None
                 tablero.primerFicha(movi,self.id)
-                self.fichas = self.fichas[:-1] #Quitamos una ficha
+                self.fichas = self.fichas[:-1] # Quitamos una ficha
                 bandera = False
 
 
@@ -195,8 +195,8 @@ class JugadorHumano(Jugador):
                     print('Aún hay fichas en el pozo.')
             elif movi == '1':
                 if tablero.pozo > 0:
-                    self.fichas.append(1) #agregamos una ficha
-                    tablero.pozo -= 1
+                    self.fichas.append(1) # Agregamos una ficha
+                    tablero.pozo -= 1 # Disminuímos el pozo.
                 else:
                     print('El pozo está vacío.')
             else:
@@ -207,11 +207,11 @@ class JugadorHumano(Jugador):
                     if lado.upper() == 'D':
                         bandera = not(tablero.colocarFicha(movi, 'D', self.id))
                         if not bandera:
-                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                            self.fichas = self.fichas[:-1] # Quitamos una ficha
                     elif lado.upper() == 'I':
                         bandera = not(tablero.colocarFicha(movi, 'I', self.id))
                         if not bandera:
-                            self.fichas = self.fichas[:-1] #Quitamos una ficha
+                            self.fichas = self.fichas[:-1] # Quitamos una ficha
                     else:
                         print('Lado no válido. Ingresa la ficha de nuevo.')
         print(self.numFichas())
@@ -371,9 +371,10 @@ class Partida():
     def crearJugadores(self):
         """
         Se crea un par de jugadores.
-        Si se escribe "CPU" como el nombre de algún jugador entonces la máquina.
+        Si se escribe "CPU" como el nombre de algún jugador entonces juega la máquina.
         """
         print("Introduce el nombre de los jugadores. Si escribes CPU, el jugador correspondiente será la computadora.")
+        # Crea a un jugador
         name1 = input("\tJugador 1:\n\t\t→ ")
         if name1 != 'CPU':
             jugador1 = JugadorHumano()
@@ -384,6 +385,7 @@ class Partida():
         jugador1.id = 1
         jugador1.inicializarFichas()
 
+        # Crea a otro jugador
         name2 = input("\tJugador 2:\n\t\t→ ")
         if name2 != 'CPU':
             jugador2 = JugadorHumano()
@@ -394,6 +396,7 @@ class Partida():
         jugador2.id = -1
         jugador2.inicializarFichas()
 
+        # Escoge quién de los jugadores inicia
         print('¿Qué jugador tira primero?')
         print('[1] {}'.format(jugador1.nombre))
         print('[2] {}'.format(jugador2.nombre))
@@ -415,7 +418,7 @@ class Partida():
     
     def jugada(self):
         """
-        Movimiento de alguno de los jugadores
+        Movimiento del jugador en turno.
         """
         print(f"\nRonda {self.ronda+1}: ")
         aux = self.ronda % 2
@@ -428,7 +431,7 @@ class Partida():
 
     def revisarVictoria(self):
         """
-        Revisar si alguien ya ganó la partida
+        Revisa si terminó el juego después de un movimiento.
         """
         if not (self.jugadores[0].pasar and self.jugadores[1].pasar): 
             if self.jugadores[0].numFichas()==0:
@@ -444,7 +447,7 @@ class Partida():
             
     def iniciaPartida(self):
         """
-        Iniciar una partida
+        Inicia una partida.
         """
         self.crearJugadores()
         self.jugadores[0].primerMovimiento(self.tablero)
@@ -470,6 +473,7 @@ if __name__=='__main__':
     #print(partida.jugadores[0].fichas)
     #print(partida.jugadores[1].fichas)
     jugadaConTiempo = tiempo_transcurrido(partida.jugada)
+    # Ciclo principal del juego.
     while not(partida.fin):
         jugadaConTiempo()
         #partida.jugada()
