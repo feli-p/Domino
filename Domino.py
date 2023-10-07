@@ -137,13 +137,6 @@ class Tablero:
                     res.append(aux)
     
         return res
-                    
-
-    def valoraTablero():
-        """
-        Evaluar cuando se acaba la partida. Victoria o otra cosa
-        """
-        pass
 
 
 class Jugador:
